@@ -1,0 +1,28 @@
+import { useEffect } from 'react'
+
+export interface SEOOptions {
+  title?: string
+  description?: string
+  image?: string
+}
+
+export function useSEO({ title, description, image }: SEOOptions) {
+  const fullTitle = title ? `${title} | ريناد` : 'ريناد | RENAD — فساتين الأعراس للإيجار والشراء'
+
+  useEffect(() => {
+    document.title = fullTitle
+    const setMeta = (attr: 'name' | 'property', key: string, content: string) => {
+      let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`)
+      if (!el) {
+        el = document.createElement('meta')
+        el.setAttribute(attr, key)
+        document.head.appendChild(el)
+      }
+      el.setAttribute('content', content)
+    }
+    if (description) setMeta('name', 'description', description)
+    setMeta('property', 'og:title', fullTitle)
+    if (description) setMeta('property', 'og:description', description)
+    if (image) setMeta('property', 'og:image', image)
+  }, [fullTitle, description, image])
+}
