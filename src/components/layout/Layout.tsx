@@ -6,6 +6,7 @@ import { useFavorites } from '@/context/FavoritesContext'
 import { useMyNotifications } from '@/hooks/useData'
 import { cn } from '@/lib/utils'
 import { NAV_LINKS } from '@/lib/constants'
+import { InstallApp } from './InstallApp'
 
 /** ترويسة شبيهة بالتطبيق: ترحيب + بحث + إشعارات */
 export function Header() {
@@ -201,6 +202,7 @@ export function Layout() {
         <Outlet />
       </main>
       <BottomNav />
+      <InstallApp />
     </div>
   )
 }
