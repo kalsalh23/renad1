@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link, Navigate, useSearchParams } from 'react-router-dom'
-import { Bell, CalendarDays, ChevronLeft, LogOut, MapPin, Phone, User } from 'lucide-react'
+import { Bell, CalendarDays, ChevronLeft, Gift, LogOut, MapPin, Phone, Sparkles, User } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { useMyAppointments, useMyNotifications } from '@/hooks/useData'
+import { usePointsBalance, POINTS_PER_DRESS } from '@/hooks/usePoints'
 import { useSEO } from '@/hooks/useSEO'
 import { APPOINTMENT_STATUS_META } from '@/lib/constants'
 import { cn, fmtDateAr, fmtDateTimeAr } from '@/lib/utils'
@@ -16,6 +17,7 @@ export default function AccountPage() {
   const { user, profile, loading: authLoading, signOut } = useAuth()
   const [params, setParams] = useSearchParams()
   const tab = (params.get('tab') as Tab) ?? 'bookings'
+  const { balance } = usePointsBalance(user?.id)
   useSEO({ title: 'حسابي' })
 
   if (authLoading) return <PageLoader />
@@ -47,8 +49,25 @@ export default function AccountPage() {
             aria-label="تسجيل الخروج"
             title="تسجيل الخروج"
           >
-            <LogOut className="h-4.5 w-4.5 h-[18px] w-[18px]" />
+            <LogOut className="h-[18px] w-[18px]" />
           </button>
+        </div>
+
+        {/* بطاقة نقاط الولاء */}
+        <div className="relative mt-3 overflow-hidden rounded-4xl bg-plum p-5 text-white">
+          <div className="absolute inset-0 opacity-20 [background:radial-gradient(ellipse_at_top,#B98CC7,transparent_60%)]" />
+          <div className="relative z-10 flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-bold tracking-widest text-white/70">RENAD REWARDS</p>
+              <p className="mt-1 text-3xl font-black">{balance}</p>
+              <p className="text-[11px] text-white/70">نقطة ولاء</p>
+            </div>
+            <Gift className="h-10 w-10 text-white/60" />
+          </div>
+          <p className="relative z-10 mt-3 border-t border-white/15 pt-2.5 text-[10px] leading-5 text-white/70">
+            <Sparkles className="me-1 inline h-3 w-3" />
+            {POINTS_PER_DRESS} نقطة لكل فستان بعد تأكيد حجزكِ — استبدليها بخصم في المعرض أو فستان مجاني.
+          </p>
         </div>
 
         {/* قائمة الأقسام */}
