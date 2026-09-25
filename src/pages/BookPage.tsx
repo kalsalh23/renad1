@@ -7,7 +7,7 @@ import { useSettings } from '@/context/SettingsContext'
 import { useToast } from '@/context/ToastContext'
 import { useDresses } from '@/hooks/useData'
 import { useSEO } from '@/hooks/useSEO'
-import { isValidEmail, isValidPhone, timeSlots, todayISO, waLink, weekDayIndex } from '@/lib/utils'
+import { isValidPhone, timeSlots, todayISO, waLink, weekDayIndex } from '@/lib/utils'
 import { PageHeader } from '@/components/layout/Layout'
 import type { WorkingHour } from '@/lib/types'
 
@@ -25,7 +25,6 @@ export default function BookPage() {
   const [form, setForm] = useState({
     customer_name: '',
     phone: '',
-    email: '',
     dress_id: '',
     appointment_date: '',
     appointment_time: '',
@@ -41,7 +40,6 @@ export default function BookPage() {
         ...f,
         customer_name: f.customer_name || profile.full_name || '',
         phone: f.phone || profile.phone || '',
-        email: f.email || profile.email || '',
       }))
     }
   }, [profile])
@@ -69,17 +67,12 @@ export default function BookPage() {
       toast('error', 'يرجى اختيار تاريخ ووقت التجربة.')
       return
     }
-    if (form.email && !isValidEmail(form.email)) {
-      toast('error', 'صيغة البريد الإلكتروني غير صحيحة.')
-      return
-    }
     setSubmitting(true)
     const chosen = dresses.find((d) => d.id === form.dress_id)
     const { error } = await supabase.from('appointments').insert({
       user_id: user?.id ?? null,
       customer_name: form.customer_name.trim(),
       phone: form.phone.trim(),
-      email: form.email.trim() || null,
       dress_id: form.dress_id || null,
       dress_code: chosen?.code ?? null,
       appointment_date: form.appointment_date,
@@ -109,6 +102,7 @@ export default function BookPage() {
             <b className="text-ink">{done.time}</b>
             {done.code && <> للفستان <b className="text-plum">{done.code}</b></>}، وسنعلمكِ بالتأكيد قريبًا.
           </p>
+          <p className="mt-2 text-[11px] text-smoke">ستجدين الحجز في «حجوزاتي» مع إشعارات حالته ونقاط الولاء بعد التأكيد.</p>
           <div className="mt-6 space-y-3">
             {settings.whatsapp_number && (
               <a
@@ -121,8 +115,8 @@ export default function BookPage() {
                 تأكيد أسرع عبر واتساب
               </a>
             )}
-            <button onClick={() => navigate('/')} className="btn-primary w-full">
-              العودة للرئيسية
+            <button onClick={() => navigate('/account?tab=bookings')} className="btn-primary w-full">
+              حجوزاتي
             </button>
           </div>
         </div>
@@ -157,12 +151,6 @@ export default function BookPage() {
               <input id="bk-phone" required dir="ltr" className="field text-right" value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="09xx xxx xxx" />
             </div>
-          </div>
-
-          <div>
-            <label className="field-label" htmlFor="bk-email">البريد الإلكتروني (اختياري)</label>
-            <input id="bk-email" type="email" dir="ltr" className="field text-right" value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="email@example.com" />
           </div>
 
           <div>
@@ -220,8 +208,8 @@ export default function BookPage() {
             {submitting ? 'جارٍ الإرسال...' : 'إرسال طلب الحجز'}
           </button>
           <p className="text-center text-[11px] leading-5 text-smoke">
-            سيتواصل معكِ فريق ريناد لتأكيد الموعد. الحجز لا يتطلب حسابًا،
-            لكن <Link to="/auth" className="font-bold text-plum">إنشاء حساب</Link> يتيح متابعة حجوزاتكِ.
+            بإرسالكِ الطلب ستتواصل معكِ إدارة المعرض لتأكيد الموعد، وسيظهر الحجز تلقائيًا
+            في <Link to="/account?tab=bookings" className="font-bold text-plum">حجوزاتي</Link>.
           </p>
         </form>
       </div>
